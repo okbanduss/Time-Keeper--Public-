@@ -9,8 +9,8 @@ from datetime import datetime
 
 load_dotenv()
 
-app = App(token=os.getenv("SLACK_BOT_TOKEN")) # Company internal use only, no need to change
-client = WebClient(token=os.environ.get("SLACK_BOT_TOKEN")) # Company internal use only, no need to change
+app = App(token=os.getenv("SLACK_BOT_TOKEN"))
+client = WebClient(token=os.environ.get("SLACK_BOT_TOKEN"))
 channel_id = "XXXXXXXX" # Your Slack User ID
 
 # Find the last conversation and the latest message
