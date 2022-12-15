@@ -16,9 +16,12 @@ def clockin():
     username = os.getenv("user")
     password = os.getenv("pass")
 
-    chrome_driver_path = ChromeDriverManager().install()
-    service = Service(chrome_driver_path)
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--no-sandbox")
+    driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
 
     driver.get('https://mlytics.webhr.co/hr/login/')
 
@@ -26,25 +29,25 @@ def clockin():
     password_field = driver.find_element(By.ID, 'p')
     username_field.send_keys(username)
     password_field.send_keys(password)
-    time.sleep(5)
+    time.sleep(10)
     WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "btnLogin"))).click()
-    time.sleep(5)
+    time.sleep(10)
     try:   
         try:
             driver.find_element(By.ID, 'btnAttendanceSignIn')
             WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "btnAttendanceSignIn"))).click()
-            from app import reply_signedin
-            reply_signedin()
+            from app import reply_clockedin
+            reply_clockedin()
         except NoSuchElementException:
             try:
                 driver.find_element(By.ID, 'btnAttendanceSignBackIn')
                 WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "btnAttendanceSignBackIn"))).click()
-                from app import reply_signedin
-                reply_signedin()
+                from app import reply_clockedin
+                reply_clockedin()
             except NoSuchElementException:
-                from app import error
-                error()
+                from app import reply_error
+                reply_error()
     except selenium.common.exceptions.TimeoutException:
-        from app import error
-        error()
+        from app import reply_error
+        reply_error()
     driver.close()
